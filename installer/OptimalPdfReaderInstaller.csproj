@@ -1,0 +1,18 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net10.0-windows</TargetFramework>
+    <UseWindowsForms>true</UseWindowsForms>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <AssemblyName>OptimalPDFReaderSetup</AssemblyName>
+    <Product>Optimal PDF Reader Setup</Product>
+    <AssemblyTitle>Optimal PDF Reader Setup</AssemblyTitle>
+    <ApplicationIcon>..\assets\OptimalPdfReader.ico</ApplicationIcon>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Include="Payload.zip" LogicalName="Payload.zip" />
+    <Content Include="..\assets\OptimalPdfReader.ico" Link="OptimalPdfReader.ico" CopyToOutputDirectory="PreserveNewest" />
+  </ItemGroup>
+</Project>
