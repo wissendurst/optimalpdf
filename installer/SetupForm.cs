@@ -130,6 +130,7 @@ public sealed class SetupForm : Form
             {
                 _status.Text = "Creating Start Menu entry...";
                 CreateStartMenuShortcut(appPath);
+                SHChangeNotify(0x08000000, 0, IntPtr.Zero, IntPtr.Zero);
             }
 
             _status.Text = "Registering PDF support...";
@@ -221,7 +222,7 @@ public sealed class SetupForm : Form
         shortcut.TargetPath = appPath;
         shortcut.WorkingDirectory = Path.GetDirectoryName(appPath);
         shortcut.Description = AppName;
-        shortcut.IconLocation = appPath + ",0";
+        shortcut.IconLocation = Path.Combine(Path.GetDirectoryName(appPath)!, "OptimalPdfReader.ico");
         shortcut.Save();
     }
 
