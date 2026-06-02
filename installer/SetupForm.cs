@@ -98,7 +98,7 @@ public sealed class SetupForm : Form
         _cancelButton.Width = 90;
         _cancelButton.Click += (_, _) => Close();
 
-        _version.Text = "V1.0";
+        _version.Text = "V1.0.1";
         _version.Left = 20;
         _version.Top = 236;
         _version.Width = 80;

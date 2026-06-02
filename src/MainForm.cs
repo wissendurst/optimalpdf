@@ -155,7 +155,19 @@ public sealed class MainForm : Form
     {
         try
         {
-            await _viewer.EnsureCoreWebView2Async();
+            var userDataFolder = Path.Combine(
+                Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
+                "Optimal PDF Reader",
+                "WebView2UserData-v101");
+            Directory.CreateDirectory(userDataFolder);
+
+            var options = new CoreWebView2EnvironmentOptions
+            {
+                AdditionalBrowserArguments = "--disable-gpu --disable-gpu-compositing"
+            };
+            var environment = await CoreWebView2Environment.CreateAsync(null, userDataFolder, options);
+
+            await _viewer.EnsureCoreWebView2Async(environment);
             _viewer.CoreWebView2.Settings.AreDefaultContextMenusEnabled = true;
             _viewer.CoreWebView2.Settings.AreDevToolsEnabled = false;
         }
@@ -195,7 +207,7 @@ public sealed class MainForm : Form
 
         _currentFile = path;
         var info = new FileInfo(path);
-        _pageCount = CountPdfPages(path);
+        _pageCount = 1;
         _viewer.Source = new Uri(path);
         _viewer.ZoomFactor = 1.0;
         _viewer.Visible = true;
@@ -206,6 +218,7 @@ public sealed class MainForm : Form
         _fileLabel.Text = $"{Path.GetFileName(path)} ({FormatFileSize(info.Length)})";
         Text = Path.GetFileName(path) + " - Optimal PDF Reader";
         _pageTimer.Start();
+        _ = UpdatePageCountInBackgroundAsync(path);
     }
 
     private void ClosePdf()
@@ -340,6 +353,26 @@ public sealed class MainForm : Form
         {
             _pageCheckRunning = false;
         }
+    }
+
+    private async Task UpdatePageCountInBackgroundAsync(string path)
+    {
+        var count = await Task.Run(() => CountPdfPages(path));
+        if (!IsHandleCreated || _currentFile != path)
+        {
+            return;
+        }
+
+        BeginInvoke(new Action(() =>
+        {
+            if (_currentFile != path)
+            {
+                return;
+            }
+
+            _pageCount = count;
+            _pageLabel.Text = $"Page 1 / {_pageCount}";
+        }));
     }
 
     private static int CountPdfPages(string path)
